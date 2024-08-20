@@ -22,7 +22,7 @@ const usuarioSchema = z.object({
     usuario: z.object({
       nome: z.string().min(1, "Por favor, informe um nome válido"),
       nomeFantasia: z.string().optional(),
-      cnpj: z.string().min(9, "Por favor, informe um CNPJ válido"),
+      cnpj: z.string().min(14, "Por favor, informe um CNPJ válido").max(14, "Por favor, informe um CNPJ válido"),
       email: z.string().email("Por favor, informe um E-mail válido."),
       telefone: z.string().min(15, "Por favor, informe um telefone válido"),
       endereco: z.object({
@@ -42,7 +42,7 @@ type FormData = z.infer<typeof usuarioSchema>;
 
 export function FormComp() {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
+    const { register, handleSubmit, formState: { errors }, reset, getValues, setValue } = useForm<FormData>({
       resolver: zodResolver(usuarioSchema),
     });
   
@@ -57,6 +57,10 @@ export function FormComp() {
         reset();
       };
     
+      const onBlurCNPJ = async () => {
+        const cnpjData = getValues('usuario.cnpj');
+        console.log(cnpjData);
+      };
   
     return (
         <>
@@ -68,6 +72,15 @@ export function FormComp() {
             <ModalCloseButton />
             <ModalBody pb={6}>
               <form onSubmit={handleSubmit(onSubmit)}>
+                                  
+              <FormControl isInvalid={!!errors.usuario?.cnpj}>
+                  <FormLabel htmlFor="usuario.cnpj">CNPJ</FormLabel>
+                  <Input maxLength={14} id="usuario.cnpj" placeholder="Digite apenas os números do CNPJ." {...register('usuario.cnpj')} onBlur={onBlurCNPJ}/>
+                  {errors.usuario?.cnpj && (
+                    <FormErrorMessage>{errors.usuario.cnpj.message}</FormErrorMessage>
+                  )}
+                </FormControl>
+
                 <FormControl isInvalid={!!errors.usuario?.nome}>
                   <FormLabel htmlFor="usuario.nome">Nome</FormLabel>
                   <Input id="usuario.nome" placeholder="Nome" {...register('usuario.nome')} />
@@ -79,14 +92,6 @@ export function FormComp() {
                 <FormControl isInvalid={!!errors.usuario?.nomeFantasia}>
                   <FormLabel htmlFor="usuario.nomeFantasia">Nome Fantasia (opcional)</FormLabel>
                   <Input id="usuario.nomeFantasia" placeholder="Nome Fantasia" {...register('usuario.nomeFantasia')} />
-                </FormControl>
-                  
-                <FormControl isInvalid={!!errors.usuario?.cnpj}>
-                  <FormLabel htmlFor="usuario.cnpj">CNPJ</FormLabel>
-                  <Input id="usuario.cnpj" placeholder="CNPJ" {...register('usuario.cnpj')} />
-                  {errors.usuario?.cnpj && (
-                    <FormErrorMessage>{errors.usuario.cnpj.message}</FormErrorMessage>
-                  )}
                 </FormControl>
 
                 <FormControl isInvalid={!!errors.usuario?.email}>

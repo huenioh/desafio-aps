@@ -4,7 +4,7 @@ function App() {
 
   return (
     <>
-      <FormComp></FormComp>
+      <FormComp />
     </>
   )
 }

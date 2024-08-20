@@ -107,7 +107,7 @@ export function FormComp() {
                 </FormControl>
                                 
                 <FormControl isInvalid={!!errors.usuario?.endereco?.cep}>
-                  <FormLabel htmlFor="usuario.endereco.cep">Telefone</FormLabel>
+                  <FormLabel htmlFor="usuario.endereco.cep">CEP</FormLabel>
                   <Input id="usuario.endereco.cep" placeholder="CEP" {...register('usuario.endereco.cep')} />
                   {errors.usuario?.endereco?.cep && (
                     <FormErrorMessage>{errors.usuario.endereco.cep.message}</FormErrorMessage>

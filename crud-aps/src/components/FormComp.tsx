@@ -18,7 +18,6 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-// Definir o esquema Zod
 const usuarioSchema = z.object({
     usuario: z.object({
       nome: z.string().min(1, "Por favor, informe um nome válido"),

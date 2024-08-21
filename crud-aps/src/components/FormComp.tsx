@@ -62,8 +62,33 @@ export function FormComp() {
     //Erro de acesso
     const onBlurCNPJ = async () => {
       const cnpj = getValues('usuario.cnpj');
-      const cnpjData = await fetch(`https://receitaws.com.br/v1/cnpj/${cnpj}`)
-      console.log(cnpjData.json());
+
+      if (cnpj)
+        try {
+          const respostaAPI = await fetch(`https://publica.cnpj.ws/cnpj/${cnpj}`);
+          const cnpjData = await respostaAPI.json();
+          console.log(cnpjData)
+
+          if (!cnpjData.erro) {
+            setValue('usuario.endereco.bairro', cnpjData.estabelecimento.bairro);
+            setValue('usuario.endereco.cep', cnpjData.estabelecimento.cep);
+            setValue('usuario.nomeFantasia', cnpjData.estabelecimento.nome_fantasia);
+            setValue('usuario.endereco.logradouro', cnpjData.estabelecimento.logradouro);
+            setValue('usuario.endereco.cidade', cnpjData.estabelecimento.cidade.nome);
+            setValue('usuario.email', cnpjData.estabelecimento.email);
+            setValue('usuario.endereco.uf', cnpjData.estabelecimento.estado.sigla);
+            setValue('usuario.endereco.complemento', cnpjData.estabelecimento.complemento);
+            setValue('usuario.nome', cnpjData.razao_social);
+            setValue('usuario.telefone', cnpjData.estabelecimento.telefone);
+            
+          } else {
+            console.log("CNPJ não encontrado")
+          }
+      } catch (error) {
+        console.error("Erro ao buscar CNPJ:", error);
+      }
+
+
     };
 
     const onBlurCep = async () => {
@@ -71,8 +96,8 @@ export function FormComp() {
       
       if (cep) {
         try {
-          const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-          const cepData = await response.json();
+          const respostaAPI = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+          const cepData = await respostaAPI.json();
     
           if (!cepData.erro) {
             setValue('usuario.endereco.bairro', cepData.bairro);

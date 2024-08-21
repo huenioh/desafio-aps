@@ -17,7 +17,6 @@ import {
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 
 const usuarioSchema = z.object({
     usuario: z.object({
@@ -59,7 +58,7 @@ export function FormComp() {
       };
 
 
-    //Erro de acesso
+    //Erro de acesso no	https://receitaws.com.br/
     const onBlurCNPJ = async () => {
       const cnpj = getValues('usuario.cnpj');
 

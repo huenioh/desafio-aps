@@ -8,58 +8,59 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const connection_1 = __importDefault(require("../db/connection"));
+const verificaCnpj_1 = __importDefault(require("../utils/verificaCnpj"));
 const createClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // try {
-    //   const newUser = validacao(req.body, clienteSchema);
-    //   const conn = await connection;
-    //   const [result] = await conn.query('INSERT INTO clientes (cliente) VALUES (?)', [JSON.stringify(newUser.cliente)]);
-    //   res.status(201).json({ cliente: newUser.cliente });
-    // } catch (error) {
-    //   res.status(400).json({ error: (error as Error).message });
-    // }
     console.log("Entrou CREATE");
 });
 const getAllClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // try {
-    //   const conn = await connection;
-    //   const [rows] = await conn.query('SELECT * FROM clientes');
-    //   const clientes = (rows as any[]).map(row => {
-    //     const clienteData = row.cliente as string;
-    //     return validacao({ cliente: JSON.parse(clienteData) }, clienteSchema).cliente;
-    //   });
-    //   res.json(clientes);
-    // } catch (error) {
-    //   res.status(500).json({ error: (error as Error).message });
-    // }
-    console.log("Entrou GET");
+    try {
+        const conn = yield connection_1.default;
+        const [rows] = yield conn.query('SELECT * FROM clientes');
+        res.json(rows);
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+const getClientByCnpj = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const conn = yield connection_1.default;
+        const clientCnpj = Number(req.params.cnpj);
+        const [rows] = yield conn.query('SELECT * FROM clientes WHERE cnpj = ?', [clientCnpj.toString()]);
+        res.json(rows);
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 const updateClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // try {
-    //   const clientId = Number(req.params.id);
-    //   const updatedUser = validacao({ cliente: { ...req.body.cliente, id: clientId } }, clienteSchema);
-    //   const conn = await connection;
-    //   await conn.query('UPDATE users SET cliente = ? WHERE id = ?', [JSON.stringify(updatedUser.cliente), updatedUser.cliente.id]);
-    //   res.json(updatedUser.cliente);
-    // } catch (error) {
-    //   res.status(400).json({ error: (error as Error).message });
-    // }
     console.log("Entrou UPDATE");
 });
 const deleteClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // try {
-    //   const userId = Number(req.params.id);
-    //   const conn = await connection;
-    //   await conn.query('DELETE FROM users WHERE id = ?', [userId]);
-    //   res.sendStatus(204);
-    // } catch (error) {
-    //   res.status(500).json({ error: (error as Error).message });
-    // }
-    console.log("Entrou DELETE");
+    try {
+        const clientCnpj = req.params.cnpj;
+        const conn = yield connection_1.default;
+        if (yield (0, verificaCnpj_1.default)(conn, clientCnpj)) {
+            yield conn.query('DELETE FROM clientes WHERE cnpj = ?', [clientCnpj]);
+            res.status(200).send('Cliente deletado com sucesso');
+        }
+        else {
+            res.status(404).send('Cliente não encontrado');
+        }
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 exports.default = {
     createClient,
     getAllClient,
     updateClient,
-    deleteClient
+    deleteClient,
+    getClientByCnpj
 };

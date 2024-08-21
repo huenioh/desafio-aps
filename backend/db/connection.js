@@ -8,6 +8,6 @@ const connection = promise_1.default.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'hugo0407',
-    database: 'db_desafio_aps'
+    database: 'crud_react'
 });
 exports.default = connection;

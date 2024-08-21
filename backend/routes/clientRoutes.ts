@@ -5,7 +5,8 @@ const router: Router = express.Router();
 
 router.post('/', clientController.createClient);
 router.get('/', clientController.getAllClient);
-router.put('/', clientController.updateClient);
-router.delete('/', clientController.deleteClient);
+router.get('/:cnpj', clientController.getClientByCnpj);
+router.put('/:id', clientController.updateClient);
+router.delete('/:cnpj', clientController.deleteClient);
 
 export default router;

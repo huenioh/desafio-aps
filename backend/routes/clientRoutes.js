@@ -8,6 +8,7 @@ const clientController_1 = __importDefault(require("../controllers/clientControl
 const router = express_1.default.Router();
 router.post('/', clientController_1.default.createClient);
 router.get('/', clientController_1.default.getAllClient);
-router.put('/', clientController_1.default.updateClient);
-router.delete('/', clientController_1.default.deleteClient);
+router.get('/:cnpj', clientController_1.default.getClientByCnpj);
+router.put('/:id', clientController_1.default.updateClient);
+router.delete('/:cnpj', clientController_1.default.deleteClient);
 exports.default = router;

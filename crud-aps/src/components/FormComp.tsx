@@ -17,6 +17,7 @@ import {
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 
 const usuarioSchema = z.object({
     usuario: z.object({
@@ -26,7 +27,7 @@ const usuarioSchema = z.object({
       email: z.string().email("Por favor, informe um E-mail válido."),
       telefone: z.string().min(15, "Por favor, informe um telefone válido"),
       endereco: z.object({
-        cep: z.string().min(9, "Por favor, informe um CEP válido"),
+        cep: z.string().min(8, "Por favor, informe um CEP válido"),
         logradouro: z
           .string()
           .min(1, "Por favor, informe um logradouro válido"),
@@ -56,12 +57,37 @@ export function FormComp() {
         onClose();
         reset();
       };
+
+
+    //Erro de acesso
+    const onBlurCNPJ = async () => {
+      const cnpj = getValues('usuario.cnpj');
+      const cnpjData = await fetch(`https://receitaws.com.br/v1/cnpj/${cnpj}`)
+      console.log(cnpjData.json());
+    };
+
+    const onBlurCep = async () => {
+      const cep = getValues('usuario.endereco.cep');
+      
+      if (cep) {
+        try {
+          const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+          const cepData = await response.json();
     
-      const onBlurCNPJ = async () => {
-        const cnpjData = getValues('usuario.cnpj');
-        console.log(cnpjData);
-      };
-  
+          if (!cepData.erro) {
+            setValue('usuario.endereco.bairro', cepData.bairro);
+            setValue('usuario.endereco.logradouro', cepData.logradouro);
+            setValue('usuario.endereco.cidade', cepData.localidade);
+            setValue('usuario.endereco.uf', cepData.uf);
+          } else {
+            console.log("CEP não encontrado.");
+          }
+        } catch (error) {
+          console.error("Erro ao buscar CEP:", error);
+        }
+      }
+    };
+
     return (
         <>
         <Button onClick={onOpen}>Adicionar Cliente</Button>
@@ -74,7 +100,7 @@ export function FormComp() {
               <form onSubmit={handleSubmit(onSubmit)}>
                                   
               <FormControl isInvalid={!!errors.usuario?.cnpj}>
-                  <FormLabel htmlFor="usuario.cnpj">CNPJ</FormLabel>
+                  <FormLabel htmlFor="usuario.cnpj" mt={4} mb={1}>CNPJ</FormLabel>
                   <Input maxLength={14} id="usuario.cnpj" placeholder="Digite apenas os números do CNPJ." {...register('usuario.cnpj')} onBlur={onBlurCNPJ}/>
                   {errors.usuario?.cnpj && (
                     <FormErrorMessage>{errors.usuario.cnpj.message}</FormErrorMessage>
@@ -82,7 +108,7 @@ export function FormComp() {
                 </FormControl>
 
                 <FormControl isInvalid={!!errors.usuario?.nome}>
-                  <FormLabel htmlFor="usuario.nome">Nome</FormLabel>
+                  <FormLabel htmlFor="usuario.nome" mt={4} mb={1}>Nome</FormLabel>
                   <Input id="usuario.nome" placeholder="Nome" {...register('usuario.nome')} />
                   {errors.usuario?.nome && (
                     <FormErrorMessage>{errors.usuario.nome.message}</FormErrorMessage>
@@ -90,12 +116,12 @@ export function FormComp() {
                 </FormControl>
     
                 <FormControl isInvalid={!!errors.usuario?.nomeFantasia}>
-                  <FormLabel htmlFor="usuario.nomeFantasia">Nome Fantasia (opcional)</FormLabel>
+                  <FormLabel htmlFor="usuario.nomeFantasia" mt={4} mb={1}>Nome Fantasia (opcional)</FormLabel>
                   <Input id="usuario.nomeFantasia" placeholder="Nome Fantasia" {...register('usuario.nomeFantasia')} />
                 </FormControl>
 
                 <FormControl isInvalid={!!errors.usuario?.email}>
-                  <FormLabel htmlFor="usuario.email">E-mail</FormLabel>
+                  <FormLabel htmlFor="usuario.email" mt={4} mb={1}>E-mail</FormLabel>
                   <Input id="usuario.email" placeholder="E-mail" {...register('usuario.email')} />
                   {errors.usuario?.email && (
                     <FormErrorMessage>{errors.usuario.email.message}</FormErrorMessage>
@@ -103,7 +129,7 @@ export function FormComp() {
                 </FormControl>
                 
                 <FormControl isInvalid={!!errors.usuario?.telefone}>
-                  <FormLabel htmlFor="usuario.telefone">Telefone</FormLabel>
+                  <FormLabel htmlFor="usuario.telefone" mt={4} mb={1}>Telefone</FormLabel>
                   <Input id="usuario.telefone" placeholder="Telefone" {...register('usuario.telefone')} />
                   {errors.usuario?.telefone && (
                     <FormErrorMessage>{errors.usuario.telefone.message}</FormErrorMessage>
@@ -111,15 +137,15 @@ export function FormComp() {
                 </FormControl>
                                 
                 <FormControl isInvalid={!!errors.usuario?.endereco?.cep}>
-                  <FormLabel htmlFor="usuario.endereco.cep">CEP</FormLabel>
-                  <Input id="usuario.endereco.cep" placeholder="CEP" {...register('usuario.endereco.cep')} />
+                  <FormLabel htmlFor="usuario.endereco.cep" mt={4} mb={1}>CEP</FormLabel>
+                  <Input id="usuario.endereco.cep" placeholder="CEP" {...register('usuario.endereco.cep')} onBlur={onBlurCep}/>
                   {errors.usuario?.endereco?.cep && (
                     <FormErrorMessage>{errors.usuario.endereco.cep.message}</FormErrorMessage>
                   )}
                 </FormControl>
                                                 
                 <FormControl isInvalid={!!errors.usuario?.endereco?.logradouro}>
-                  <FormLabel htmlFor="usuario.endereco.logradouro">Logradouro</FormLabel>
+                  <FormLabel htmlFor="usuario.endereco.logradouro" mt={4} mb={1}>Logradouro</FormLabel>
                   <Input id="usuario.endereco.logradouro" placeholder="Logradouro" {...register('usuario.endereco.logradouro')} />
                   {errors.usuario?.endereco?.logradouro && (
                     <FormErrorMessage>{errors.usuario.endereco.logradouro.message}</FormErrorMessage>
@@ -127,7 +153,7 @@ export function FormComp() {
                 </FormControl>
                                                                 
                 <FormControl isInvalid={!!errors.usuario?.endereco?.bairro}>
-                  <FormLabel htmlFor="usuario.endereco.bairro">Bairro</FormLabel>
+                  <FormLabel htmlFor="usuario.endereco.bairro" mt={4} mb={1}>Bairro</FormLabel>
                   <Input id="usuario.endereco.bairro" placeholder="Bairro" {...register('usuario.endereco.bairro')} />
                   {errors.usuario?.endereco?.bairro && (
                     <FormErrorMessage>{errors.usuario.endereco.bairro.message}</FormErrorMessage>
@@ -135,7 +161,7 @@ export function FormComp() {
                 </FormControl>
                                                                 
                 <FormControl isInvalid={!!errors.usuario?.endereco?.cidade}>
-                  <FormLabel htmlFor="usuario.endereco.cidade">Cidade</FormLabel>
+                  <FormLabel htmlFor="usuario.endereco.cidade" mt={4} mb={1}>Cidade</FormLabel>
                   <Input id="usuario.endereco.cidade" placeholder="Cidade" {...register('usuario.endereco.cidade')} />
                   {errors.usuario?.endereco?.cidade && (
                     <FormErrorMessage>{errors.usuario.endereco.cidade.message}</FormErrorMessage>
@@ -143,7 +169,7 @@ export function FormComp() {
                 </FormControl>
                                                                                 
                 <FormControl isInvalid={!!errors.usuario?.endereco?.uf}>
-                  <FormLabel htmlFor="usuario.endereco.uf">UF</FormLabel>
+                  <FormLabel htmlFor="usuario.endereco.uf" mt={4} mb={1}>UF</FormLabel>
                   <Input id="usuario.endereco.uf" placeholder="UF" {...register('usuario.endereco.uf')} />
                   {errors.usuario?.endereco?.uf && (
                     <FormErrorMessage>{errors.usuario.endereco.uf.message}</FormErrorMessage>
@@ -151,7 +177,7 @@ export function FormComp() {
                 </FormControl>
                                                                                 
                 <FormControl isInvalid={!!errors.usuario?.endereco?.complemento}>
-                  <FormLabel htmlFor="usuario.endereco.complemento">Complemento</FormLabel>
+                  <FormLabel htmlFor="usuario.endereco.complemento" mt={4} mb={1}>Complemento</FormLabel>
                   <Input id="usuario.endereco.complemento" placeholder="Complemento" {...register('usuario.endereco.complemento')} />
                 </FormControl>
               </form>

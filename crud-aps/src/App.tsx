@@ -9,7 +9,6 @@ function App() {
         <Text fontSize="2xl">Tabela de Clientes</Text>
         <FormComp />
       </Flex>
-
       <TableComp />
     </Container>
   );

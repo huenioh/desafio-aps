@@ -18,8 +18,8 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const usuarioSchema = z.object({
-    usuario: z.object({
+const clienteSchema = z.object({
+    cliente: z.object({
       nome: z.string().min(1, "Por favor, informe um nome válido"),
       nomeFantasia: z.string().optional(),
       cnpj: z.string().min(14, "Por favor, informe um CNPJ válido").max(14, "Por favor, informe um CNPJ válido"),
@@ -38,12 +38,12 @@ const usuarioSchema = z.object({
     }),
   });
 
-type FormData = z.infer<typeof usuarioSchema>;
+type FormData = z.infer<typeof clienteSchema>;
 
 export function FormComp() {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { register, handleSubmit, formState: { errors }, reset, getValues, setValue } = useForm<FormData>({
-      resolver: zodResolver(usuarioSchema),
+      resolver: zodResolver(clienteSchema),
     });
   
     const onSubmit = (data: FormData) => {
@@ -60,7 +60,7 @@ export function FormComp() {
 
     //Erro de acesso no	https://receitaws.com.br/
     const onBlurCNPJ = async () => {
-      const cnpj = getValues('usuario.cnpj');
+      const cnpj = getValues('cliente.cnpj');
 
       if (cnpj)
         try {
@@ -69,16 +69,16 @@ export function FormComp() {
           console.log(cnpjData)
 
           if (!cnpjData.erro) {
-            setValue('usuario.endereco.bairro', cnpjData.estabelecimento.bairro);
-            setValue('usuario.endereco.cep', cnpjData.estabelecimento.cep);
-            setValue('usuario.nomeFantasia', cnpjData.estabelecimento.nome_fantasia);
-            setValue('usuario.endereco.logradouro', cnpjData.estabelecimento.logradouro);
-            setValue('usuario.endereco.cidade', cnpjData.estabelecimento.cidade.nome);
-            setValue('usuario.email', cnpjData.estabelecimento.email);
-            setValue('usuario.endereco.uf', cnpjData.estabelecimento.estado.sigla);
-            setValue('usuario.endereco.complemento', cnpjData.estabelecimento.complemento);
-            setValue('usuario.nome', cnpjData.razao_social);
-            setValue('usuario.telefone', cnpjData.estabelecimento.telefone);
+            setValue('cliente.endereco.bairro', cnpjData.estabelecimento.bairro);
+            setValue('cliente.endereco.cep', cnpjData.estabelecimento.cep);
+            setValue('cliente.nomeFantasia', cnpjData.estabelecimento.nome_fantasia);
+            setValue('cliente.endereco.logradouro', cnpjData.estabelecimento.logradouro);
+            setValue('cliente.endereco.cidade', cnpjData.estabelecimento.cidade.nome);
+            setValue('cliente.email', cnpjData.estabelecimento.email);
+            setValue('cliente.endereco.uf', cnpjData.estabelecimento.estado.sigla);
+            setValue('cliente.endereco.complemento', cnpjData.estabelecimento.complemento);
+            setValue('cliente.nome', cnpjData.razao_social);
+            setValue('cliente.telefone', cnpjData.estabelecimento.telefone);
             
           } else {
             console.log("CNPJ não encontrado")
@@ -91,7 +91,7 @@ export function FormComp() {
     };
 
     const onBlurCep = async () => {
-      const cep = getValues('usuario.endereco.cep');
+      const cep = getValues('cliente.endereco.cep');
       
       if (cep) {
         try {
@@ -99,10 +99,10 @@ export function FormComp() {
           const cepData = await respostaAPI.json();
     
           if (!cepData.erro) {
-            setValue('usuario.endereco.bairro', cepData.bairro);
-            setValue('usuario.endereco.logradouro', cepData.logradouro);
-            setValue('usuario.endereco.cidade', cepData.localidade);
-            setValue('usuario.endereco.uf', cepData.uf);
+            setValue('cliente.endereco.bairro', cepData.bairro);
+            setValue('cliente.endereco.logradouro', cepData.logradouro);
+            setValue('cliente.endereco.cidade', cepData.localidade);
+            setValue('cliente.endereco.uf', cepData.uf);
           } else {
             console.log("CEP não encontrado.");
           }
@@ -123,86 +123,86 @@ export function FormComp() {
             <ModalBody pb={6}>
               <form onSubmit={handleSubmit(onSubmit)}>
                                   
-              <FormControl isInvalid={!!errors.usuario?.cnpj}>
-                  <FormLabel htmlFor="usuario.cnpj" mt={4} mb={1}>CNPJ</FormLabel>
-                  <Input maxLength={14} id="usuario.cnpj" placeholder="Digite apenas os números do CNPJ." {...register('usuario.cnpj')} onBlur={onBlurCNPJ}/>
-                  {errors.usuario?.cnpj && (
-                    <FormErrorMessage>{errors.usuario.cnpj.message}</FormErrorMessage>
+              <FormControl isInvalid={!!errors.cliente?.cnpj}>
+                  <FormLabel htmlFor="cliente.cnpj" mt={4} mb={1}>CNPJ</FormLabel>
+                  <Input maxLength={14} id="cliente.cnpj" placeholder="Digite apenas os números do CNPJ." {...register('cliente.cnpj')} onBlur={onBlurCNPJ}/>
+                  {errors.cliente?.cnpj && (
+                    <FormErrorMessage>{errors.cliente.cnpj.message}</FormErrorMessage>
                   )}
                 </FormControl>
 
-                <FormControl isInvalid={!!errors.usuario?.nome}>
-                  <FormLabel htmlFor="usuario.nome" mt={4} mb={1}>Nome</FormLabel>
-                  <Input id="usuario.nome" placeholder="Nome" {...register('usuario.nome')} />
-                  {errors.usuario?.nome && (
-                    <FormErrorMessage>{errors.usuario.nome.message}</FormErrorMessage>
+                <FormControl isInvalid={!!errors.cliente?.nome}>
+                  <FormLabel htmlFor="cliente.nome" mt={4} mb={1}>Nome</FormLabel>
+                  <Input id="cliente.nome" placeholder="Nome" {...register('cliente.nome')} />
+                  {errors.cliente?.nome && (
+                    <FormErrorMessage>{errors.cliente.nome.message}</FormErrorMessage>
                   )}
                 </FormControl>
     
-                <FormControl isInvalid={!!errors.usuario?.nomeFantasia}>
-                  <FormLabel htmlFor="usuario.nomeFantasia" mt={4} mb={1}>Nome Fantasia (opcional)</FormLabel>
-                  <Input id="usuario.nomeFantasia" placeholder="Nome Fantasia" {...register('usuario.nomeFantasia')} />
+                <FormControl isInvalid={!!errors.cliente?.nomeFantasia}>
+                  <FormLabel htmlFor="cliente.nomeFantasia" mt={4} mb={1}>Nome Fantasia (opcional)</FormLabel>
+                  <Input id="cliente.nomeFantasia" placeholder="Nome Fantasia" {...register('cliente.nomeFantasia')} />
                 </FormControl>
 
-                <FormControl isInvalid={!!errors.usuario?.email}>
-                  <FormLabel htmlFor="usuario.email" mt={4} mb={1}>E-mail</FormLabel>
-                  <Input id="usuario.email" placeholder="E-mail" {...register('usuario.email')} />
-                  {errors.usuario?.email && (
-                    <FormErrorMessage>{errors.usuario.email.message}</FormErrorMessage>
+                <FormControl isInvalid={!!errors.cliente?.email}>
+                  <FormLabel htmlFor="cliente.email" mt={4} mb={1}>E-mail</FormLabel>
+                  <Input id="cliente.email" placeholder="E-mail" {...register('cliente.email')} />
+                  {errors.cliente?.email && (
+                    <FormErrorMessage>{errors.cliente.email.message}</FormErrorMessage>
                   )}
                 </FormControl>
                 
-                <FormControl isInvalid={!!errors.usuario?.telefone}>
-                  <FormLabel htmlFor="usuario.telefone" mt={4} mb={1}>Telefone</FormLabel>
-                  <Input id="usuario.telefone" placeholder="Telefone" {...register('usuario.telefone')} />
-                  {errors.usuario?.telefone && (
-                    <FormErrorMessage>{errors.usuario.telefone.message}</FormErrorMessage>
+                <FormControl isInvalid={!!errors.cliente?.telefone}>
+                  <FormLabel htmlFor="cliente.telefone" mt={4} mb={1}>Telefone</FormLabel>
+                  <Input id="cliente.telefone" placeholder="Telefone" {...register('cliente.telefone')} />
+                  {errors.cliente?.telefone && (
+                    <FormErrorMessage>{errors.cliente.telefone.message}</FormErrorMessage>
                   )}
                 </FormControl>
                                 
-                <FormControl isInvalid={!!errors.usuario?.endereco?.cep}>
-                  <FormLabel htmlFor="usuario.endereco.cep" mt={4} mb={1}>CEP</FormLabel>
-                  <Input id="usuario.endereco.cep" placeholder="CEP" {...register('usuario.endereco.cep')} onBlur={onBlurCep}/>
-                  {errors.usuario?.endereco?.cep && (
-                    <FormErrorMessage>{errors.usuario.endereco.cep.message}</FormErrorMessage>
+                <FormControl isInvalid={!!errors.cliente?.endereco?.cep}>
+                  <FormLabel htmlFor="cliente.endereco.cep" mt={4} mb={1}>CEP</FormLabel>
+                  <Input id="cliente.endereco.cep" placeholder="CEP" {...register('cliente.endereco.cep')} onBlur={onBlurCep}/>
+                  {errors.cliente?.endereco?.cep && (
+                    <FormErrorMessage>{errors.cliente.endereco.cep.message}</FormErrorMessage>
                   )}
                 </FormControl>
                                                 
-                <FormControl isInvalid={!!errors.usuario?.endereco?.logradouro}>
-                  <FormLabel htmlFor="usuario.endereco.logradouro" mt={4} mb={1}>Logradouro</FormLabel>
-                  <Input id="usuario.endereco.logradouro" placeholder="Logradouro" {...register('usuario.endereco.logradouro')} />
-                  {errors.usuario?.endereco?.logradouro && (
-                    <FormErrorMessage>{errors.usuario.endereco.logradouro.message}</FormErrorMessage>
+                <FormControl isInvalid={!!errors.cliente?.endereco?.logradouro}>
+                  <FormLabel htmlFor="cliente.endereco.logradouro" mt={4} mb={1}>Logradouro</FormLabel>
+                  <Input id="cliente.endereco.logradouro" placeholder="Logradouro" {...register('cliente.endereco.logradouro')} />
+                  {errors.cliente?.endereco?.logradouro && (
+                    <FormErrorMessage>{errors.cliente.endereco.logradouro.message}</FormErrorMessage>
                   )}
                 </FormControl>
                                                                 
-                <FormControl isInvalid={!!errors.usuario?.endereco?.bairro}>
-                  <FormLabel htmlFor="usuario.endereco.bairro" mt={4} mb={1}>Bairro</FormLabel>
-                  <Input id="usuario.endereco.bairro" placeholder="Bairro" {...register('usuario.endereco.bairro')} />
-                  {errors.usuario?.endereco?.bairro && (
-                    <FormErrorMessage>{errors.usuario.endereco.bairro.message}</FormErrorMessage>
+                <FormControl isInvalid={!!errors.cliente?.endereco?.bairro}>
+                  <FormLabel htmlFor="cliente.endereco.bairro" mt={4} mb={1}>Bairro</FormLabel>
+                  <Input id="cliente.endereco.bairro" placeholder="Bairro" {...register('cliente.endereco.bairro')} />
+                  {errors.cliente?.endereco?.bairro && (
+                    <FormErrorMessage>{errors.cliente.endereco.bairro.message}</FormErrorMessage>
                   )}
                 </FormControl>
                                                                 
-                <FormControl isInvalid={!!errors.usuario?.endereco?.cidade}>
-                  <FormLabel htmlFor="usuario.endereco.cidade" mt={4} mb={1}>Cidade</FormLabel>
-                  <Input id="usuario.endereco.cidade" placeholder="Cidade" {...register('usuario.endereco.cidade')} />
-                  {errors.usuario?.endereco?.cidade && (
-                    <FormErrorMessage>{errors.usuario.endereco.cidade.message}</FormErrorMessage>
+                <FormControl isInvalid={!!errors.cliente?.endereco?.cidade}>
+                  <FormLabel htmlFor="cliente.endereco.cidade" mt={4} mb={1}>Cidade</FormLabel>
+                  <Input id="cliente.endereco.cidade" placeholder="Cidade" {...register('cliente.endereco.cidade')} />
+                  {errors.cliente?.endereco?.cidade && (
+                    <FormErrorMessage>{errors.cliente.endereco.cidade.message}</FormErrorMessage>
                   )}
                 </FormControl>
                                                                                 
-                <FormControl isInvalid={!!errors.usuario?.endereco?.uf}>
-                  <FormLabel htmlFor="usuario.endereco.uf" mt={4} mb={1}>UF</FormLabel>
-                  <Input id="usuario.endereco.uf" placeholder="UF" {...register('usuario.endereco.uf')} />
-                  {errors.usuario?.endereco?.uf && (
-                    <FormErrorMessage>{errors.usuario.endereco.uf.message}</FormErrorMessage>
+                <FormControl isInvalid={!!errors.cliente?.endereco?.uf}>
+                  <FormLabel htmlFor="cliente.endereco.uf" mt={4} mb={1}>UF</FormLabel>
+                  <Input id="cliente.endereco.uf" placeholder="UF" {...register('cliente.endereco.uf')} />
+                  {errors.cliente?.endereco?.uf && (
+                    <FormErrorMessage>{errors.cliente.endereco.uf.message}</FormErrorMessage>
                   )}
                 </FormControl>
                                                                                 
-                <FormControl isInvalid={!!errors.usuario?.endereco?.complemento}>
-                  <FormLabel htmlFor="usuario.endereco.complemento" mt={4} mb={1}>Complemento</FormLabel>
-                  <Input id="usuario.endereco.complemento" placeholder="Complemento" {...register('usuario.endereco.complemento')} />
+                <FormControl isInvalid={!!errors.cliente?.endereco?.complemento}>
+                  <FormLabel htmlFor="cliente.endereco.complemento" mt={4} mb={1}>Complemento</FormLabel>
+                  <Input id="cliente.endereco.complemento" placeholder="Complemento" {...register('cliente.endereco.complemento')} />
                 </FormControl>
               </form>
             </ModalBody>

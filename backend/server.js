@@ -7,9 +7,14 @@ const express_1 = __importDefault(require("express"));
 const clientRoutes_1 = __importDefault(require("./routes/clientRoutes"));
 const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
+app.use((0, cors_1.default)({
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express_1.default.json());
 app.use('/clientes', clientRoutes_1.default);
-app.use((0, cors_1.default)());
-app.listen(3000, () => {
-    console.log('Servidor iniciado na porta 3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor iniciado na porta ${PORT}`);
 });

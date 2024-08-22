@@ -22,13 +22,18 @@ const getAllClient = async (req: Request, res: Response) => {
 const getClientByCnpj = async (req: Request, res: Response) => {
   try {
     const conn = await connection;
-    const clientCnpj = Number(req.params.cnpj);
-    const [rows] = await conn.query('SELECT * FROM clientes WHERE cnpj = ?', [clientCnpj.toString()]);
-    res.json(rows);
+    const [rows] = await conn.execute('SELECT * FROM clientes WHERE cnpj = ?', [req.params.cnpj]);
+    const rowsData = rows as any[];
+    if (rowsData.length > 0) {
+      res.status(200).json(rowsData[0]);
+    } else {
+      res.status(404).json({ message: 'Cliente não encontrado' });
+    }
   } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
+    res.status(500).json({ message: 'Erro interno do servidor' });
   }
 };
+
 
 const updateClient = async (req: Request, res: Response) => {
   console.log("Entrou UPDATE")

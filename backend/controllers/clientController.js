@@ -12,10 +12,49 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const clienteModel_1 = require("../models/clienteModel");
 const connection_1 = __importDefault(require("../db/connection"));
 const verificaCnpj_1 = __importDefault(require("../utils/verificaCnpj"));
+const validacao_1 = require("../utils/validacao");
 const createClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("Entrou CREATE");
+    try {
+        const conn = yield connection_1.default;
+        const cliente = (0, validacao_1.validacao)(req.body, clienteModel_1.clienteSchema);
+        if (yield (0, verificaCnpj_1.default)(conn, cliente.cliente.cnpj)) {
+            res.status(409);
+        }
+        else {
+            yield conn.query(`INSERT INTO clientes (
+          nome, 
+          nome_fantasia, 
+          cnpj, 
+          email, 
+          telefone, 
+          cep, 
+          logradouro, 
+          bairro, 
+          cidade, 
+          uf, 
+          complemento
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [
+                cliente.cliente.nome,
+                cliente.cliente.nomeFantasia,
+                cliente.cliente.cnpj,
+                cliente.cliente.email,
+                cliente.cliente.telefone,
+                cliente.cliente.cep,
+                cliente.cliente.logradouro,
+                cliente.cliente.bairro,
+                cliente.cliente.cidade,
+                cliente.cliente.uf,
+                cliente.cliente.complemento || null
+            ]);
+            res.status(201).json({ message: 'Cliente criado com sucesso!', cliente });
+        }
+    }
+    catch (error) {
+        res.status(400).json({ error });
+    }
 });
 const getAllClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {

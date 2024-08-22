@@ -26,10 +26,26 @@ export function FormComp() {
       resolver: zodResolver(clienteSchema),
     });
   
-    const onSubmit = (data: FormClientData) => {
-      console.log(data);
-      onClose();
-      reset();
+    const onSubmit = async (data: FormClientData) => {
+      try {
+        const response = await fetch('http://localhost:3000/clientes/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+    
+        if (response.ok) {
+          console.log('Cliente criado com sucesso!');
+          onClose();
+          reset();
+        } else {
+          console.error('Erro ao criar cliente');
+        } 
+      } catch (error) {
+        console.error('Erro na requisição:', error);
+      }    
     };
 
     const onCancel = () => {

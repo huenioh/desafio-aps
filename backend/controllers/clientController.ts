@@ -2,11 +2,50 @@ import { Request, Response } from "express";
 import { clienteSchema } from '../models/clienteModel';
 import connection from '../db/connection';
 import verificaCnpjCadastrado from "../utils/verificaCnpj"
+import { validacao } from "../utils/validacao";
 
 
 
 const createClient = async (req: Request, res: Response) => {
-  console.log("Entrou CREATE")
+  try {
+    const conn = await connection;
+    const cliente = validacao(req.body, clienteSchema);
+    if (await verificaCnpjCadastrado(conn, cliente.cliente.cnpj)) {
+      res.status(409);
+    } else {
+      await conn.query(
+        `INSERT INTO clientes (
+          nome, 
+          nome_fantasia, 
+          cnpj, 
+          email, 
+          telefone, 
+          cep, 
+          logradouro, 
+          bairro, 
+          cidade, 
+          uf, 
+          complemento
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          cliente.cliente.nome,
+          cliente.cliente.nomeFantasia,
+          cliente.cliente.cnpj,
+          cliente.cliente.email,
+          cliente.cliente.telefone,
+          cliente.cliente.cep,
+          cliente.cliente.logradouro,
+          cliente.cliente.bairro,
+          cliente.cliente.cidade,
+          cliente.cliente.uf,
+          cliente.cliente.complemento || null
+        ]
+      );
+      res.status(201).json({ message: 'Cliente criado com sucesso!', cliente });
+    }
+  } catch (error) {
+    res.status(400).json({ error });
+  }
 };
 
 const getAllClient = async (req: Request, res: Response) => {

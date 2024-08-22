@@ -6,7 +6,7 @@ export const clienteSchema = z.object({
     nomeFantasia: z.string().optional(),
     cnpj: z.string().min(14, "Por favor, informe um CNPJ válido").max(14, "Por favor, informe um CNPJ válido"),
     email: z.string().email("Por favor, informe um E-mail válido."),
-    telefone: z.string().min(15, "Por favor, informe um telefone válido"),
+    telefone: z.string().min(11, "Por favor, informe um telefone válido"),
     cep: z.string().min(8, "Por favor, informe um CEP válido"),
     logradouro: z.string().min(1, "Por favor, informe um logradouro válido"),
     bairro: z.string().min(1, "Por favor, informe um bairro válido"),

@@ -36,7 +36,7 @@ interface Cliente {
   complemento: string;
 }
 
-export const TableComp = forwardRef<any, TableCompProps>((_, ref) => {
+export const TableComp = forwardRef<unknown, TableCompProps>((_, ref) => {
   const [clients, setClients] = useState<Cliente[]>([]);
   const [selectedClient, setSelectedClient] = useState<Cliente | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();

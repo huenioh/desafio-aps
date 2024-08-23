@@ -1,16 +1,30 @@
-import { FormComp } from "./components/FormComp";
-import { TableComp } from "./components/TableComp";
-import { Flex, Container, Text } from "@chakra-ui/react";
+import { ChakraProvider, Box, Container, VStack, Heading } from "@chakra-ui/react";
+import { TableComp } from './components/TableComp';
+import { FormComp } from './components/FormComp';
 
 function App() {
   return (
-    <Container maxW="container.xl" mt={10}>
-      <Flex justify="space-between" align="center" mb={4}>
-        <Text fontSize="2xl">Tabela de Clientes</Text>
-        <FormComp />
-      </Flex>
-      <TableComp />
-    </Container>
+    <ChakraProvider>
+      <Box bg="gray.100" minHeight="100vh" py={5}>
+        <Container maxWidth="container.xl">
+          <VStack
+            spacing={8}
+            bg="white"
+            p={8}
+            borderRadius="lg"
+            boxShadow="lg"
+          >
+            <Heading as="h1" size="xl" textAlign="center">
+              Gerenciamento de Clientes
+            </Heading>
+            
+            <FormComp />
+            
+            <TableComp />
+          </VStack>
+        </Container>
+      </Box>
+    </ChakraProvider>
   );
 }
 

@@ -63,13 +63,13 @@ const getAllClient = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         res.json(rows);
     }
     catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error });
     }
 });
 const getClientByCnpj = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const conn = yield connection_1.default;
-        const [rows] = yield conn.execute('SELECT * FROM clientes WHERE cnpj = ?', [req.params.cnpj]);
+        const [rows] = yield conn.query('SELECT * FROM clientes WHERE cnpj = ?', [req.params.cnpj]);
         const rowsData = rows;
         if (rowsData.length > 0) {
             res.status(200).json(rowsData[0]);
@@ -79,7 +79,7 @@ const getClientByCnpj = (req, res) => __awaiter(void 0, void 0, void 0, function
         }
     }
     catch (error) {
-        res.status(500).json({ message: 'Erro interno do servidor' });
+        res.status(500).json({ error });
     }
 });
 const updateClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {

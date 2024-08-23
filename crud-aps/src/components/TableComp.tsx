@@ -21,8 +21,6 @@ import {
 import { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { fetchClients, deleteClient } from "../controller/clientController"
 
-interface TableCompProps {}
-
 interface Cliente {
   cnpj: string;
   nome: string;
@@ -37,7 +35,7 @@ interface Cliente {
   complemento: string;
 }
 
-export const TableComp = forwardRef<unknown, TableCompProps>((_, ref) => {
+export const TableComp = forwardRef<unknown, Cliente>((_, ref) => {
   const [clients, setClients] = useState<Cliente[]>([]);
   const [selectedClient, setSelectedClient] = useState<Cliente | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();

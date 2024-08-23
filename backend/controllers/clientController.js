@@ -15,11 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const clienteModel_1 = require("../models/clienteModel");
 const connection_1 = __importDefault(require("../db/connection"));
 const verificaCnpj_1 = __importDefault(require("../utils/verificaCnpj"));
-const validacao_1 = require("../utils/validacao");
 const createClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const conn = yield connection_1.default;
-        const cliente = (0, validacao_1.validacao)(req.body, clienteModel_1.clienteSchema);
+        const cliente = clienteModel_1.clienteSchema.parse(req.body);
+        console.log(cliente);
         if (yield (0, verificaCnpj_1.default)(conn, cliente.cliente.cnpj)) {
             res.status(409);
         }
@@ -83,6 +83,7 @@ const getClientByCnpj = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 const updateClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //LEMBRAR DE FAZER A VALIDACAO COM O ZOD
     console.log("Entrou UPDATE");
 });
 const deleteClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {

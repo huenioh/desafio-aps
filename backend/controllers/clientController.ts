@@ -2,14 +2,13 @@ import { Request, Response } from "express";
 import { clienteSchema } from '../models/clienteModel';
 import connection from '../db/connection';
 import verificaCnpjCadastrado from "../utils/verificaCnpj"
-import { validacao } from "../utils/validacao";
-
 
 
 const createClient = async (req: Request, res: Response) => {
   try {
     const conn = await connection;
-    const cliente = validacao(req.body, clienteSchema);
+    const cliente = clienteSchema.parse(req.body);
+    console.log(cliente);
     if (await verificaCnpjCadastrado(conn, cliente.cliente.cnpj)) {
       res.status(409);
     } else {
@@ -54,14 +53,14 @@ const getAllClient = async (req: Request, res: Response) => {
     const [rows] = await conn.query('SELECT * FROM clientes');
     res.json(rows);
   } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
+    res.status(500).json({ error });
   }
 };
 
 const getClientByCnpj = async (req: Request, res: Response) => {
   try {
     const conn = await connection;
-    const [rows] = await conn.execute('SELECT * FROM clientes WHERE cnpj = ?', [req.params.cnpj]);
+    const [rows] = await conn.query('SELECT * FROM clientes WHERE cnpj = ?', [req.params.cnpj]);
     const rowsData = rows as any[];
     if (rowsData.length > 0) {
       res.status(200).json(rowsData[0]);
@@ -69,12 +68,13 @@ const getClientByCnpj = async (req: Request, res: Response) => {
       res.status(404).json({ message: 'Cliente não encontrado' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Erro interno do servidor' });
+    res.status(500).json({ error });
   }
 };
 
 
 const updateClient = async (req: Request, res: Response) => {
+  //LEMBRAR DE FAZER A VALIDACAO COM O ZOD
   console.log("Entrou UPDATE")
 };
 

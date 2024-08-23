@@ -19,6 +19,7 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
+import { fetchClients, deleteClient } from "../controller/clientController"
 
 interface TableCompProps {}
 
@@ -41,27 +42,25 @@ export const TableComp = forwardRef<unknown, TableCompProps>((_, ref) => {
   const [selectedClient, setSelectedClient] = useState<Cliente | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  useEffect(() => {
-    fetchClients();
-  }, []);
 
-  const fetchClients = async () => {
+  const updateTable = async () => {
     try {
-      const response = await fetch('http://localhost:3000/clientes');
-      if (!response.ok) {
-        throw new Error('Falha ao buscar clientes');
-      }
-      const data = await response.json();
-      setClients(data);
+      const data = await fetchClients();
+      setClients(data); 
     } catch (error) {
-      console.error('Erro ao buscar clientes:', error);
+      console.error('Erro ao atualizar a tabela:', error);
     }
   };
+
+  useEffect(() => {
+    updateTable();
+  }, []);
 
   useImperativeHandle(ref, () => ({
     addClient: (data: Cliente) => {
       setClients([...clients, data]);
     },
+    updateTable: updateTable
   }));
 
   const handleClientClick = (client: Cliente) => {
@@ -70,19 +69,13 @@ export const TableComp = forwardRef<unknown, TableCompProps>((_, ref) => {
   };
 
   const handleEdit = (cnpj: string) => {
-    // Implementar lógica de edição
     console.log('Editar cliente:', cnpj);
   };
 
   const handleDelete = async (cnpj: string) => {
     try {
-      const response = await fetch(`http://localhost:3000/clientes/${cnpj}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        throw new Error('Falha ao excluir cliente');
-      }
-      fetchClients();
+      await deleteClient(cnpj);
+      updateTable();
     } catch (error) {
       console.error('Erro ao excluir cliente:', error);
     }
@@ -109,14 +102,14 @@ export const TableComp = forwardRef<unknown, TableCompProps>((_, ref) => {
                 <Td>{client.email}</Td>
                 <Td>{client.telefone}</Td>
                 <Td>
-                  <IconButton
-                    aria-label="Editar cliente"
+                <IconButton
+                    mr={3}
+                    aria-label="Editar Cliente"
                     icon={<EditIcon />}
                     onClick={() => handleEdit(client.cnpj)}
-                    mr={2}
                   />
                   <IconButton
-                    aria-label="Excluir cliente"
+                    aria-label="Excluir Cliente"
                     icon={<DeleteIcon />}
                     onClick={() => handleDelete(client.cnpj)}
                   />

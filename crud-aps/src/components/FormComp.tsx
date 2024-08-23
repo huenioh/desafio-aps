@@ -17,6 +17,7 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { clienteSchema, FormClientData } from "../schemas/clienteSchema";
+import { addClient } from "../controller/clientController"
 
 export function FormComp() {
 
@@ -28,24 +29,12 @@ export function FormComp() {
   
     const onSubmit = async (data: FormClientData) => {
       try {
-        const response = await fetch('http://localhost:3000/clientes/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-        });
-    
-        if (response.ok) {
-          console.log('Cliente criado com sucesso!');
-          onClose();
-          reset();
-        } else {
-          console.error('Erro ao criar cliente');
-        } 
+        await addClient(data);
+        onClose();
+        reset();
       } catch (error) {
-        console.error('Erro na requisição:', error);
-      }    
+        console.error('Erro ao excluir cliente:', error);
+      }
     };
 
     const onCancel = () => {
@@ -114,7 +103,7 @@ export function FormComp() {
         <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Criar conta de usuário</ModalHeader>
+            <ModalHeader>Insira os dados do cliente</ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={6}>
               <form onSubmit={handleSubmit(onSubmit)}>

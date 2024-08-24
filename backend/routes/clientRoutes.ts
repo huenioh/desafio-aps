@@ -6,6 +6,7 @@ const router: Router = express.Router();
 router.post('/', clientController.createClient);
 router.get('/', clientController.getAllClient);
 router.get('/:cnpj', clientController.getClientByCnpj);
+router.get('/search/:data', clientController.searchClients);
 router.put('/:cnpj', clientController.updateClient);
 router.delete('/:cnpj', clientController.deleteClient);
 

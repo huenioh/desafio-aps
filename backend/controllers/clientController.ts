@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { clienteSchema } from '../models/clienteModel';
 import connection from '../db/connection';
 import verificaCnpjCadastrado from "../utils/verificaCnpj"
+import { RowDataPacket } from "mysql2";
 
 
 const createClient = async (req: Request, res: Response) => {
@@ -72,6 +73,21 @@ const getClientByCnpj = async (req: Request, res: Response) => {
   }
 };
 
+export const searchClients = async (req: Request, res: Response) => {
+  try {
+    const conn = await connection;
+    const searchTerm = `%${req.params.data}%`;
+    const [rows] = await conn.query<RowDataPacket[]>(
+      `SELECT * FROM clientes 
+       WHERE CONCAT_WS(' ', nome, nome_fantasia, cnpj, email, telefone, cep, logradouro, bairro, cidade, uf, complemento) LIKE ?`,
+      [searchTerm]
+    );
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error('Erro ao buscar clientes:', error);
+    res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+};
 
 const updateClient = async (req: Request, res: Response) => {
   //LEMBRAR DE FAZER A VALIDACAO COM O ZOD
@@ -98,5 +114,6 @@ export default {
   getAllClient,
   updateClient,
   deleteClient,
-  getClientByCnpj
+  getClientByCnpj,
+  searchClients
 };

@@ -20,8 +20,6 @@ import { clienteSchema, FormClientData } from "../schemas/clienteSchema";
 import { addClient } from "../controller/clientController"
 
 export function FormComp() {
-
-
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { register, handleSubmit, formState: { errors }, reset, getValues, setValue } = useForm<FormClientData>({
       resolver: zodResolver(clienteSchema),
@@ -33,7 +31,7 @@ export function FormComp() {
         onClose();
         reset();
       } catch (error) {
-        console.error('Erro ao excluir cliente:', error);
+        console.error('Erro ao adicionar cliente:', error);
       }
     };
 

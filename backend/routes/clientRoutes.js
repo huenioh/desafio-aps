@@ -9,6 +9,7 @@ const router = express_1.default.Router();
 router.post('/', clientController_1.default.createClient);
 router.get('/', clientController_1.default.getAllClient);
 router.get('/:cnpj', clientController_1.default.getClientByCnpj);
+router.get('/search/:data', clientController_1.default.searchClients);
 router.put('/:cnpj', clientController_1.default.updateClient);
 router.delete('/:cnpj', clientController_1.default.deleteClient);
 exports.default = router;

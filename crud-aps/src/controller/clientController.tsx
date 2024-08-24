@@ -46,7 +46,9 @@ export async function deleteClient(cnpj: string) {
 
   export async function fetchClients() {
     try {
-      const response = await fetch('http://localhost:3000/clientes');
+      const response = await fetch('http://localhost:3000/clientes', {
+        method: 'GET',
+      });
       if (!response.ok) {
         throw new Error('Falha ao buscar clientes');
       }
@@ -58,6 +60,18 @@ export async function deleteClient(cnpj: string) {
     }
   }
 
-
-
-
+  export async function searchClients(data: string) {
+    try {
+      const response = await fetch(`http://localhost:3000/clientes/search/${data}`, {
+        method: 'GET',
+      });
+      if (!response.ok) {
+        throw new Error('Falha ao buscar clientes');
+      }
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.error('Erro ao buscar clientes:', error);
+      throw error;
+    }
+  }

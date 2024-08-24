@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.searchClients = void 0;
 const clienteModel_1 = require("../models/clienteModel");
 const connection_1 = __importDefault(require("../db/connection"));
 const verificaCnpj_1 = __importDefault(require("../utils/verificaCnpj"));
@@ -82,6 +83,20 @@ const getClientByCnpj = (req, res) => __awaiter(void 0, void 0, void 0, function
         res.status(500).json({ error });
     }
 });
+const searchClients = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const conn = yield connection_1.default;
+        const searchTerm = `%${req.params.data}%`;
+        const [rows] = yield conn.query(`SELECT * FROM clientes 
+       WHERE CONCAT_WS(' ', nome, nome_fantasia, cnpj, email, telefone, cep, logradouro, bairro, cidade, uf, complemento) LIKE ?`, [searchTerm]);
+        res.status(200).json(rows);
+    }
+    catch (error) {
+        console.error('Erro ao buscar clientes:', error);
+        res.status(500).json({ message: 'Erro interno do servidor' });
+    }
+});
+exports.searchClients = searchClients;
 const updateClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //LEMBRAR DE FAZER A VALIDACAO COM O ZOD
     console.log("Entrou UPDATE");
@@ -107,5 +122,6 @@ exports.default = {
     getAllClient,
     updateClient,
     deleteClient,
-    getClientByCnpj
+    getClientByCnpj,
+    searchClients: exports.searchClients
 };

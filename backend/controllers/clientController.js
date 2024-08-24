@@ -12,10 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchClients = void 0;
+exports.updateClient = exports.searchClients = void 0;
 const clienteModel_1 = require("../models/clienteModel");
 const connection_1 = __importDefault(require("../db/connection"));
 const verificaCnpj_1 = __importDefault(require("../utils/verificaCnpj"));
+const zod_1 = require("zod");
 const createClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const conn = yield connection_1.default;
@@ -98,9 +99,53 @@ const searchClients = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.searchClients = searchClients;
 const updateClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    //LEMBRAR DE FAZER A VALIDACAO COM O ZOD
+    try {
+        const conn = yield connection_1.default;
+        const newClientData = clienteModel_1.clienteSchema.parse(req.body);
+        console.log(newClientData);
+        if (yield (0, verificaCnpj_1.default)(conn, newClientData.cliente.cnpj)) {
+            yield conn.query(`UPDATE clientes SET 
+          nome = ?,
+          nome_fantasia = ?,
+          cnpj = ?,
+          email = ?,
+          telefone = ?,
+          cep = ?,
+          logradouro = ?,
+          bairro = ?,
+          cidade = ?,
+          uf = ?,
+          complemento = ?
+        WHERE cnpj = ?`, [
+                newClientData.cliente.nome,
+                newClientData.cliente.nomeFantasia,
+                newClientData.cliente.cnpj,
+                newClientData.cliente.email,
+                newClientData.cliente.telefone,
+                newClientData.cliente.cep,
+                newClientData.cliente.logradouro,
+                newClientData.cliente.bairro,
+                newClientData.cliente.cidade,
+                newClientData.cliente.uf,
+                newClientData.cliente.complemento,
+                newClientData.cliente.cnpj
+            ]);
+            return res.status(200).json({ message: 'Cliente atualizado com sucesso.' });
+        }
+        else {
+            return res.status(404).json({ message: 'Cliente não encontrado.' });
+        }
+    }
+    catch (error) {
+        if (error instanceof zod_1.z.ZodError) {
+            return res.status(400).json({ message: 'Erro de validação', errors: error.errors });
+        }
+        console.error("Erro ao atualizar cliente:", error);
+        res.status(500).json({ message: 'Erro interno do servidor' });
+    }
     console.log("Entrou UPDATE");
 });
+exports.updateClient = updateClient;
 const deleteClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const clientCnpj = req.params.cnpj;
@@ -120,7 +165,7 @@ const deleteClient = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 exports.default = {
     createClient,
     getAllClient,
-    updateClient,
+    updateClient: exports.updateClient,
     deleteClient,
     getClientByCnpj,
     searchClients: exports.searchClients

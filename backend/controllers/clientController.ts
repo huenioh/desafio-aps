@@ -3,6 +3,7 @@ import { clienteSchema } from '../models/clienteModel';
 import connection from '../db/connection';
 import verificaCnpjCadastrado from "../utils/verificaCnpj"
 import { RowDataPacket } from "mysql2";
+import { z } from "zod";
 
 
 const createClient = async (req: Request, res: Response) => {
@@ -89,9 +90,57 @@ export const searchClients = async (req: Request, res: Response) => {
   }
 };
 
-const updateClient = async (req: Request, res: Response) => {
-  //LEMBRAR DE FAZER A VALIDACAO COM O ZOD
-  console.log("Entrou UPDATE")
+export const updateClient = async (req: Request, res: Response) => {
+  try {
+    const conn = await connection;
+
+    const newClientData = clienteSchema.parse(req.body);
+
+    if (await verificaCnpjCadastrado(conn, newClientData.cliente.cnpj)) {
+      await conn.query(
+        `UPDATE clientes SET 
+          nome = ?,
+          nome_fantasia = ?,
+          cnpj = ?,
+          email = ?,
+          telefone = ?,
+          cep = ?,
+          logradouro = ?,
+          bairro = ?,
+          cidade = ?,
+          uf = ?,
+          complemento = ?
+        WHERE cnpj = ?`,
+        [
+          newClientData.cliente.nome,
+          newClientData.cliente.nomeFantasia,
+          newClientData.cliente.cnpj,
+          newClientData.cliente.email,
+          newClientData.cliente.telefone,
+          newClientData.cliente.cep,
+          newClientData.cliente.logradouro,
+          newClientData.cliente.bairro,
+          newClientData.cliente.cidade,
+          newClientData.cliente.uf,
+          newClientData.cliente.complemento,
+          newClientData.cliente.cnpj
+        ]
+      );
+
+      return res.status(200).json({ message: 'Cliente atualizado com sucesso.' });
+    } else {
+      return res.status(404).json({ message: 'Cliente não encontrado.' });
+    }
+
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ message: 'Erro de validação', errors: error.errors });
+    }
+    console.error("Erro ao atualizar cliente:", error);
+    res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+
+  console.log("Entrou UPDATE");
 };
 
 const deleteClient = async (req: Request, res: Response) => {

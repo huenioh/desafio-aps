@@ -19,7 +19,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { clienteSchema, FormClientData } from "../schemas/clienteSchema";
 import { addClient } from "../controller/clientController"
 
-export function FormComp() {
+interface FormCompProps {
+  onClientAdded: () => void;
+}
+
+export function FormComp({ onClientAdded }: FormCompProps) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { register, handleSubmit, formState: { errors }, reset, getValues, setValue } = useForm<FormClientData>({
       resolver: zodResolver(clienteSchema),
@@ -30,6 +34,7 @@ export function FormComp() {
         await addClient(data);
         onClose();
         reset();
+        onClientAdded();
       } catch (error) {
         console.error('Erro ao adicionar cliente:', error);
       }

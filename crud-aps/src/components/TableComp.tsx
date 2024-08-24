@@ -1,3 +1,4 @@
+import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import {
   Table,
@@ -18,8 +19,8 @@ import {
   useDisclosure,
   IconButton,
 } from "@chakra-ui/react";
-import { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { fetchClients, deleteClient } from "../controller/clientController"
+
 
 interface Cliente {
   cnpj: string;
@@ -35,16 +36,21 @@ interface Cliente {
   complemento: string;
 }
 
-export const TableComp = forwardRef<unknown, Cliente>((_, ref) => {
+interface TableCompRef {
+  addClient: (data: Cliente) => void;
+  updateTable: () => Promise<void>;
+  updateClients: (newClients: Cliente[]) => void;
+}
+
+export const TableComp = forwardRef<TableCompRef, {}>((_, ref) => {
   const [clients, setClients] = useState<Cliente[]>([]);
   const [selectedClient, setSelectedClient] = useState<Cliente | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-
   const updateTable = async () => {
     try {
       const data = await fetchClients();
-      setClients(data); 
+      setClients(data);
     } catch (error) {
       console.error('Erro ao atualizar a tabela:', error);
     }
@@ -58,7 +64,10 @@ export const TableComp = forwardRef<unknown, Cliente>((_, ref) => {
     addClient: (data: Cliente) => {
       setClients([...clients, data]);
     },
-    updateTable: updateTable
+    updateTable: updateTable,
+    updateClients: (newClients: Cliente[]) => {
+      setClients(newClients);
+    }
   }));
 
   const handleClientClick = (client: Cliente) => {
@@ -67,7 +76,7 @@ export const TableComp = forwardRef<unknown, Cliente>((_, ref) => {
   };
 
   const handleEdit = (cnpj: string) => {
-    console.log('Editar cliente:', cnpj);
+    console.log(cnpj);
   };
 
   const handleDelete = async (cnpj: string) => {

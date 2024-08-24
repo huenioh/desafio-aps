@@ -1,7 +1,5 @@
-import { ChakraProvider, Box, Container, VStack, Heading, Flex, Spacer } from "@chakra-ui/react";
-import { TableComp } from './components/TableComp';
-import { FormComp } from './components/FormComp';
-import { InputComp } from "./components/InputComp";
+import { ChakraProvider, Box, Container, VStack, Heading } from "@chakra-ui/react";
+import { ClientsPage } from "./components/pageComp"
 
 function App() {
   return (
@@ -18,12 +16,7 @@ function App() {
             <Heading as="h1" size="xl" textAlign="center">
               Gerenciamento de Clientes
             </Heading>
-            <Flex minWidth='max-content' alignItems='center' gap='250'>
-              <InputComp />
-              <Spacer/>
-              <FormComp />
-            </Flex>
-            <TableComp />
+              <ClientsPage />
           </VStack>
         </Container>
       </Box>

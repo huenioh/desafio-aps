@@ -102,7 +102,6 @@ const updateClient = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const conn = yield connection_1.default;
         const newClientData = clienteModel_1.clienteSchema.parse(req.body);
-        console.log(newClientData);
         if (yield (0, verificaCnpj_1.default)(conn, newClientData.cliente.cnpj)) {
             yield conn.query(`UPDATE clientes SET 
           nome = ?,

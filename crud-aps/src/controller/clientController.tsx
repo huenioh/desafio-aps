@@ -46,7 +46,7 @@ export async function deleteClient(cnpj: string) {
 
   export async function fetchClients() {
     try {
-      const response = await fetch('http://localhost:3000/clientes', {
+      const response = await fetch('http://localhost:3000/clientes/search/', {
         method: 'GET',
       });
       if (!response.ok) {

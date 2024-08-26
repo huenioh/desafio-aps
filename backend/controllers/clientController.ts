@@ -12,7 +12,7 @@ const createClient = async (req: Request, res: Response) => {
     const cliente = clienteSchema.parse(req.body);
     console.log(cliente);
     if (await verificaCnpjCadastrado(conn, cliente.cliente.cnpj)) {
-      res.status(409);
+      res.status(409).send("Cliente já cadastrado na base.");
     } else {
       await conn.query(
         `INSERT INTO clientes (

@@ -49,7 +49,7 @@ export function FormComp({ onClientAdded }: FormCompProps) {
     //Erro de acesso no	https://receitaws.com.br/
     const onBlurCNPJ = async () => {
       const cnpj = getValues('cliente.cnpj');
-
+      
       if (cnpj)
         try {
           const respostaAPI = await fetch(`https://publica.cnpj.ws/cnpj/${cnpj}`);

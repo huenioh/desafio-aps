@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
+import { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import {
   Table,

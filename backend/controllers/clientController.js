@@ -23,7 +23,7 @@ const createClient = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const cliente = clienteModel_1.clienteSchema.parse(req.body);
         console.log(cliente);
         if (yield (0, verificaCnpj_1.default)(conn, cliente.cliente.cnpj)) {
-            res.status(409);
+            res.status(409).send("Cliente já cadastrado na base.");
         }
         else {
             yield conn.query(`INSERT INTO clientes (
